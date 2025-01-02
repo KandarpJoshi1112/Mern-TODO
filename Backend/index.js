@@ -2,6 +2,7 @@ import express from "express";
 import { configDotenv } from "dotenv";
 import mongoose from "mongoose";
 import todoRoute from "./routes/todo.route.js";
+import userRoute from "./routes/user.route.js";
 const app = express();
 configDotenv();
 
@@ -18,9 +19,11 @@ const connectDB = async () => {
   }
 };
 connectDB();
+
 //routes
 app.use(express.json());
 app.use("/todo", todoRoute);
+app.use("/user", userRoute);
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
