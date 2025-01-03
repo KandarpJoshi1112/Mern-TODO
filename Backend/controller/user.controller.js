@@ -1,7 +1,7 @@
 import User from "../model/user.model.js";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-
+import { generateTokenAndSaveInCookies } from "../jwt/token.js";
 const userSchema = z.object({
   email: z.string().email({ message: "Invalid Email Address" }),
   username: z.string().min(3, { message: "Username must be atleat 3 characters" }).max(20),
@@ -19,7 +19,7 @@ export const register = async (req, res) => {
     const validation = userSchema.safeParse({ email, username, password });
 
     if (!validation.success) {
-      const errorMessage = validation.error.errors.map((error) => error.message);
+      const errorMessage = validation.error.errors.map((err) => err.message);
       return res.status(400).json({ message: errorMessage });
     }
 
@@ -33,7 +33,8 @@ export const register = async (req, res) => {
     await newUser.save();
 
     if (newUser) {
-      return res.status(200).json({ message: "User Created Successfully", newUser });
+      const token = await generateTokenAndSaveInCookies(newUser._id, res);
+      return res.status(200).json({ message: "User Created Successfully", newUser, token });
     }
   } catch (error) {
     return res.status(500).json({ message: "Error Registering User" });
@@ -53,6 +54,8 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
 
+    const token = await generateTokenAndSaveInCookies(user._id, res);
+
     res.status(200).json({ message: "User Logged In Successfully", user });
   } catch (error) {
     console.log(error);
@@ -61,5 +64,10 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  console.log("Logout Function Called");
+  try {
+    res.clearCookie("jwt", { path: "/" });
+    return res.status(200).json({ message: "User Logged Out Successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error Logging Out User" });
+  }
 };
