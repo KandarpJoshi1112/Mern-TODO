@@ -4,6 +4,7 @@ export const createTodo = async (req, res) => {
   const todo = new Todo({
     text: req.body.text,
     completed: req.body.completed,
+    user: req.user._id, //associating the loggedin user with the todo
   });
 
   try {
@@ -16,7 +17,7 @@ export const createTodo = async (req, res) => {
 
 export const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todo.find({ user: req.user._id }); //find all todos associated with the loggedin user
     res.status(200).json({ message: "Fetched Todos Successfully", todos });
   } catch (error) {
     res.status(404).json({ message: "Error in Fetching Todos" });
@@ -34,7 +35,10 @@ export const updateTodo = async (req, res) => {
 
 export const deleteTodo = async (req, res) => {
   try {
-    await Todo.findByIdAndDelete(req.params.id);
+    const todo = await Todo.findByIdAndDelete(req.params.id);
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
     res.status(200).json({ message: "Todo Deleted Successfully" });
   } catch (error) {
     res.status(404).json({ message: "Error in Deleting Todos" });

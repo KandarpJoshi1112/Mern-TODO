@@ -10,8 +10,8 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
-
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/todo" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="*" element={<PageNotFound />} />
