@@ -2,6 +2,7 @@
 
 Welcome to the **MERN To-Do App**! This full-stack application allows users to sign up, log in, and manage their tasks seamlessly. It's built using the powerful **MERN stack** (MongoDB, Express.js, React.js, Node.js) with JWT-based authentication to ensure security.
 
+
 ---
 
 ## Features
